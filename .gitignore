@@ -7,6 +7,7 @@ examples/blog/build
 lib/
 node_modules
 npm-debug.log
+build.log
 src/css
 src/javascripts/config.js
 src/javascripts/test/fixtures/examples/blog

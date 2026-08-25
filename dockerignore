@@ -1,0 +1,53 @@
+# ---------------------------------------------------------------------------
+# .dockerignore
+#
+# The critical entry is node_modules: your host tree contains a half-built
+# node-sass compiled against Node 23's ABI. Copying it into a Node 6 image
+# would poison the install layer. Dependencies are installed IN the image.
+# ---------------------------------------------------------------------------
+
+node_modules
+**/node_modules
+bower_components
+**/bower_components
+
+# NOTE: build/ is deliberately NOT ignored. It is committed in this repo
+# (marmelab ship built files), and `make build` does `rm -rf build/*` and
+# regenerates it anyway. Ignoring it risks breaking the demo page, which
+# references build/ng-admin.min.js.
+
+# NOTE: do NOT add any of these — the build depends on them:
+#   Makefile           entire workflow (install / run / build / test)
+#   _postinstall.js    invoked by `make install` after npm install
+#   webpack.config.js  the build itself
+#   examples/          `make run` serves examples/blog as content-base
+#   scripts/           check-only-in-tests.sh, called by `make test`
+#   npm-shrinkwrap.json  the lockfile npm 3 actually respects
+
+.git
+.gitignore
+.github
+.tmp
+.sass-cache
+.cache
+npm-debug.log*
+.npm
+.nyc_output
+coverage
+
+Dockerfile
+docker-compose*.yml
+.dockerignore
+DOCKER.md
+
+.env
+.env.*
+*.pem
+*.key
+.netrc
+.npmrc
+
+.idea
+.vscode
+*.swp
+.DS_Store

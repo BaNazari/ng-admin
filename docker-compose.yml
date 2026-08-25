@@ -1,0 +1,77 @@
+# ===========================================================================
+# ng-admin — compose stack
+#   docker compose up --build   ->  http://localhost:8000
+#
+# Uses the default ./Dockerfile, so no `dockerfile:` key is needed.
+# ===========================================================================
+name: ng-admin-legacy
+
+services:
+
+  dev:
+    build:
+      context: .
+    image: ng-admin:dev
+
+    # KNOWN 8000 both sides. The port is hardcoded in the Makefile
+    # (--port 8000), in examples/blog/index.html (absolute
+    # http://localhost:8000/ URLs) and in webpack.config.js
+    # (output.publicPath). It is a constant, not a knob.
+    # The 127.0.0.1 prefix keeps this 2016-era dev server off your LAN.
+    ports:
+      - "127.0.0.1:8000:8000"
+
+    volumes:
+      - .:/app          # add :Z if SELinux denies access (Fedora)
+      # Anonymous volume shadows the bind mount for this path only, so the
+      # container keeps its Node 6 node_modules and your host tree (built
+      # against Node 23's ABI) never leaks in. Without this line the bind
+      # mount hides node_modules entirely and nothing runs.
+      - /app/node_modules
+
+    # Bridge with NAT disabled: published ports work, but the container can't
+    # reach the internet at RUN time. npm install happened at BUILD time.
+    networks:
+      - isolated
+
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+
+    # Image already sets USER node (uid 1000); restated so it survives the
+    # command override below. If `id -u` isn't 1000, use
+    # "${UID:-1000}:${GID:-1000}" and export those.
+    user: "node"
+
+    init: true
+
+    environment:
+      - NODE_ENV=development
+      # KNOWN karma.conf.js: browsers = [process.env.CI ? 'PhantomJS' : 'Chrome'].
+      # Set CI=true only when running tests, so PhantomJS is chosen and no
+      # Chrome/Xvfb is required:
+      #   docker compose exec -e CI=true dev make test-unit
+      # Not set globally — it may alter behaviour of other tooling.
+
+    # KNOWN The Makefile's run target passes --port 8000 but no --host, so
+    # webpack-dev-server binds localhost and nothing reaches it from the host.
+    # This reproduces that target exactly, plus --host 0.0.0.0, without
+    # editing the Makefile.
+    # KNOWN Reproduces the Makefile's run target, plus --host 0.0.0.0 (the
+    # Makefile passes --port but no --host, so wds would bind localhost and be
+    # unreachable from the host).
+    # MUST STAY ON ONE LINE. A YAML folded block (>) preserves newlines on
+    # more-indented lines, which silently truncated this command after
+    # webpack-dev-server.js and made it run with all-default flags
+    # (port 8080, content-base /app) — nothing served on 8000.
+    command: sh -c "mkdir -p examples/blog/build && cp node_modules/fakerest/dist/FakeRest.min.js examples/blog/build/fakerest.js && cp node_modules/sinon/pkg/sinon-server-1.14.1.js examples/blog/build/sinon-server.js && ./node_modules/webpack-dev-server/bin/webpack-dev-server.js --colors --inline --hot --devtool cheap-module-inline-source-map --content-base examples/blog --host 0.0.0.0 --port 8000"
+
+    stdin_open: true
+    tty: true
+
+networks:
+  isolated:
+    driver: bridge
+    driver_opts:
+      com.docker.network.bridge.enable_ip_masquerade: "false"
