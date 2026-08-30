@@ -23,7 +23,7 @@ export default function maDeleteButtonDirective($state) {
             scope.stateParams = stateParams;
         },
         template:
-` <a class="btn btn-default" ng-class="size ? \'btn-\' + size : \'\'" ui-sref="delete(stateParams)">
+` <a class="btn btn-default" data-testid="delete-button" ng-class="size ? \'btn-\' + size : \'\'" ui-sref="delete(stateParams)">
 <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>&nbsp;<span class="hidden-xs" translate="{{ ::label }}"></span>
 </a>`
     };

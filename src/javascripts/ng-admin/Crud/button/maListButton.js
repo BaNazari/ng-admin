@@ -21,7 +21,7 @@ export default function maListButtonDirective($state) {
             scope.stateParams = stateParams;
         },
         template:
-` <a class="btn btn-default" ng-class="size ? \'btn-\' + size : \'\'" ui-sref="list(stateParams)">
+` <a class="btn btn-default" data-testid="list-button" ng-class="size ? \'btn-\' + size : \'\'" ui-sref="list(stateParams)">
 <span class="glyphicon glyphicon-list" aria-hidden="true"></span>&nbsp;<span class="hidden-xs" translate="{{ ::label }}"></span>
 </a>`
     };

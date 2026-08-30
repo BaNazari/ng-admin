@@ -23,7 +23,7 @@ export default function maShowButtonDirective($state) {
             scope.stateParams = stateParams;
         },
         template:
-` <a class="btn btn-default" ng-class="size ? \'btn-\' + size : \'\'" ui-sref="show(stateParams)">
+` <a class="btn btn-default" data-testid="show-button" ng-class="size ? \'btn-\' + size : \'\'" ui-sref="show(stateParams)">
 <span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>&nbsp;<span class="hidden-xs" translate="{{ ::label }}"></span>
 </a>`
     };

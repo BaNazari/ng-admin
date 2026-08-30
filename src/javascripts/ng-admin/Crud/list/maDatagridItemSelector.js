@@ -6,7 +6,7 @@ export default function maDatagridItemSelector() {
             selection: '=',
             toggleSelect: '&'
         },
-        template: '<input type="checkbox" ng-click="toggle(entry)" ng-checked="isInSelection()"/>',
+        template: '<input type="checkbox" data-testid="row-checkbox" ng-click="toggle(entry)" ng-checked="isInSelection()"/>',
         link: function (scope) {
             scope.toggle = entry => scope.toggleSelect({entry: entry});
             let e = scope.entry;
